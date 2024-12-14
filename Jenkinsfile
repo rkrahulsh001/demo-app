@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('cb52b7e8-c9c5-480e-aa7b-649afd815b01')
-        IMAGE_NAME = 'rahuls001/demo-app-rahul'
+        IMAGE_NAME = 'rahuls001/demo-app'
     }
 
     stages {
