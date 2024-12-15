@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('cb52b7e8-c9c5-480e-aa7b-649afd815b01')
-        IMAGE_NAME = 'rahuls001/demo-app'
+        DOCKER_IMAGE = "rahuls001/demo-app"
+        EMAIL_RECIPIENT = "rahul.sharma@tiket.com"
     }
 
     stages {
@@ -16,16 +16,21 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${IMAGE_NAME}:${env.BUILD_ID}")
+                    sh """
+                    docker build -t ${DOCKER_IMAGE}:latest .
+                    """
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker_hub_creds') {
-                        dockerImage.push('latest')
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push ${DOCKER_IMAGE}:latest
+                        """
                     }
                 }
             }
@@ -34,11 +39,11 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 script {
-                    sh '''
-                    docker container stop demo-app || true
-                    docker container rm demo-app || true
-                    docker run -d -p 8080:8080 --name demo-app rahuls001/demo-app:latest
-                    '''
+                    sh """
+                    docker stop demo-app || true
+                    docker rm demo-app || true
+                    docker run -d --name demo-app -p 3000:3000 ${DOCKER_IMAGE}:latest
+                    """
                 }
             }
         }
@@ -46,10 +51,15 @@ pipeline {
 
     post {
         success {
-            echo "Deployment successful!"
+            mail to: "${EMAIL_RECIPIENT}",
+                 subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins job ${env.JOB_NAME} completed successfully. Build #${env.BUILD_NUMBER}"
         }
         failure {
-            echo "Deployment failed. Please check the logs."
+            mail to: "${EMAIL_RECIPIENT}",
+                 subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins job ${env.JOB_NAME} failed. Build #${env.BUILD_NUMBER}"
         }
     }
 }
+
