@@ -1,18 +1,15 @@
 pipeline {
     agent any
-
     environment {
         DOCKER_IMAGE = "rahuls001/demo-app"
-        EMAIL_RECIPIENT = "rahul.sharma@tiket.com"
+        // EMAIL_RECIPIENT = "rahul.sharma@tiket.com"
     }
-
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
@@ -22,7 +19,6 @@ pipeline {
                 }
             }
         }
-
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -35,7 +31,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy Application') {
             steps {
                 script {
@@ -48,18 +43,16 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            mail to: "${EMAIL_RECIPIENT}",
-                 subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The Jenkins job ${env.JOB_NAME} completed successfully. Build #${env.BUILD_NUMBER}"
-        }
-        failure {
-            mail to: "${EMAIL_RECIPIENT}",
-                 subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "The Jenkins job ${env.JOB_NAME} failed. Build #${env.BUILD_NUMBER}"
-        }
-    }
+    // post {
+    //     success {
+    //         mail to: "${EMAIL_RECIPIENT}",
+    //              subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "The Jenkins job ${env.JOB_NAME} completed successfully. Build #${env.BUILD_NUMBER}"
+    //     }
+    //     failure {
+    //         mail to: "${EMAIL_RECIPIENT}",
+    //              subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    //              body: "The Jenkins job ${env.JOB_NAME} failed. Build #${env.BUILD_NUMBER}"
+    //     }
+    // }
 }
-
