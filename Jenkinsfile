@@ -36,8 +36,8 @@ pipeline {
            steps {
                script {
                    sh """
-                   docker service rm demo-app || true
-                   docker run -d --name demo-app --replicas 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
+                   docker ps -q --filter "name=demo-app" | xargs -r docker rm -f
+                   docker run -d --name demo-app --scale 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
                    """
                }
            }
@@ -56,20 +56,20 @@ pipeline {
 
                def body = """<html>
                                <body>
-                                   <div style="border: 4px solid ${bannerColor}; padding: 10px";>
-                                       <h2>$(jobName) - Build ${buildNumber}</h2>
+                                   <div style="border: 4px solid ${bannerColor}; padding: 10px;">
+                                       <h2>${jobName} - Build ${buildNumber}</h2>
                                        <div style="background-color: ${bannerColor}; padding: 10px;">
-                                           <h3 style="color: white;"> Pipeline Status: ${pipelineStatus.toUpperCase()}</h3>;
+                                           <h3 style="color: white;"> Pipeline Status: ${pipelineStatus.toUpperCase()}</h3>
                                        </div>
-                                       <p>Check the <a href="%{BUILD_URL}">console output</a></p>
+                                       <p>Check the <a href="${BUILD_URL}">console output</a></p>
                                    </div>
                                </body>
                            </html>"""
                emailext (
                    subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
                    body: body,
-                   to: "rkrahulsh001@gmail.com",
-                   replyTo: "rkrahulsh001@gmail.com",
+                   to: EMAIL_RECIPIENT,
+                   replyTo: EMAIL_RECIPIENT,
                    mimeType: "text/html"
                )
            }
