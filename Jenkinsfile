@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "rahuls001/demo-app"
         PATH = "${tool 'docker'}/bin:${env.PATH}"
-        // EMAIL_RECIPIENT = "rahul.sharma@tiket.com"
+        EMAIL_RECIPIENT = "rkrahulsh001@gmail.com"
     }
     stages {
         stage('Checkout Code') {
@@ -43,16 +43,16 @@ pipeline {
             }
         }
     }
-    // post {
-    //     success {
-    //         mail to: "${EMAIL_RECIPIENT}",
-    //              subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-    //              body: "The Jenkins job ${env.JOB_NAME} completed successfully. Build #${env.BUILD_NUMBER}"
-    //     }
-    //     failure {
-    //         mail to: "${EMAIL_RECIPIENT}",
-    //              subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-    //              body: "The Jenkins job ${env.JOB_NAME} failed. Build #${env.BUILD_NUMBER}"
-    //     }
-    // }
+    post {
+        success {
+            mail to: "${EMAIL_RECIPIENT}",
+                 subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins job ${env.JOB_NAME} completed successfully. Build #${env.BUILD_NUMBER}"
+        }
+        failure {
+            mail to: "${EMAIL_RECIPIENT}",
+                 subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The Jenkins job ${env.JOB_NAME} failed. Build #${env.BUILD_NUMBER}"
+        }
+    }
 }
