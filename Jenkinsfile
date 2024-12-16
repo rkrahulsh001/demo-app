@@ -36,8 +36,8 @@ pipeline {
            steps {
                script {
                    sh """
-                   docker ps -q --filter "name=demo-app" | xargs -r docker rm -f
-                   docker run -d --name demo-app --scale 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
+                   docker service rm demo-app || true
+                   docker run -d --name demo-app --replicas 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
                    """
                }
            }
