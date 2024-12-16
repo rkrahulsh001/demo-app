@@ -3,7 +3,7 @@ pipeline {
    environment {
        DOCKER_IMAGE = "rahuls001/demo-app"
        PATH = "${tool 'docker'}/bin:${env.PATH}"
-       EMAIL_RECIPIENT = "rkrahulsh001@gmail.com"
+       EMAIL_RECIPIENT = "ananda.yashaswi@quokkalabs.com"
    }
    stages {
        stage('Checkout Code') {
