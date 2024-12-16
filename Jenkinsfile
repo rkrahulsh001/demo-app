@@ -37,7 +37,8 @@ pipeline {
                 script {
                     sh """
                     docker service rm demo-app || true
-                    docker service create --name demo-app --replicas 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
+                    docker run -d --name demo-app --replicas 2 -p 3000:3000 ${DOCKER_IMAGE}:latest
+
                     """
                 }
             }
