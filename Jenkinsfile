@@ -36,7 +36,9 @@ pipeline {
             steps {
                 script {
                     sh """
-                    docker run -d --name demo-app -p 3000:3000 ${DOCKER_IMAGE}:latest
+                    docker rm -f demo-app
+                    docker swarm init
+                    docker service create --name demo-app -p 3000:3000 ${DOCKER_IMAGE}:latest
                     """
                 }
             }
