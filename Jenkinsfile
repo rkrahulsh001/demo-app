@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = "rahuls001/demo-app"
+        PATH = "${tool 'docker'}/bin:${env.PATH}"
         // EMAIL_RECIPIENT = "rahul.sharma@tiket.com"
     }
     stages {
