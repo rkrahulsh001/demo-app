@@ -36,6 +36,7 @@ pipeline {
             steps {
                 script {
                     sh """
+                    docker rm -f demo-app
                     docker run -d --name demo-app -p 3000:3000 ${DOCKER_IMAGE}:latest
                     """
                 }
